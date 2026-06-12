@@ -21,27 +21,27 @@ print("=" * 60)
 print("\n[1/10] Cleaning NAV History...")
 nav = pd.read_csv(RAW / "02_nav_history.csv")
 
-# Step 1: Parse date column to proper datetime
+# Step 1-->Parse date column to proper datetime
 nav["date"] = pd.to_datetime(nav["date"])
 
-# Step 2: Sort by fund code and date
+# Step 2-->Sort by fund code and date
 nav = nav.sort_values(["amfi_code", "date"]).reset_index(drop=True)
 
-# Step 3: Remove rows where NAV is 0 or negative (impossible values)
+# Step 3-->Remove rows where NAV is 0 or negative (impossible values)
 invalid_nav = nav[nav["nav"] <= 0]
 print(f"  Removed {len(invalid_nav)} rows with NAV <= 0")
 nav = nav[nav["nav"] > 0]
 
-# Step 4: Forward-fill missing NAV values within each fund
+# Step 4-->Forward-fill missing NAV values within each fund
 # Why: If market is closed on Monday (holiday), we carry forward Friday's NAV
 nav["nav"] = nav.groupby("amfi_code")["nav"].ffill()
 
-# Step 5: Remove duplicates (same fund, same date)
+# Step 5-->Remove duplicates (same fund, same date)
 before = len(nav)
 nav = nav.drop_duplicates(subset=["amfi_code", "date"])
 print(f"  Removed {before - len(nav)} duplicate rows")
 
-# Step 6: Calculate daily return for each fund
+# Step 6->Calculate daily return for each fund
 # Formula: (today's NAV - yesterday's NAV) / yesterday's NAV * 100
 nav["daily_return_pct"] = (
     nav.groupby("amfi_code")["nav"]

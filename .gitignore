@@ -1,0 +1,18 @@
+# Database files (too large for GitHub)
+*.db
+*.sqlite
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Environment
+*.env
+venv/
+
+# Large data files
+data/raw/
